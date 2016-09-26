@@ -517,14 +517,14 @@ public class DexCollectionService extends Service {
             }
             if ((buffer[0] == 0x11 || buffer[0] == 0x15) && buffer[1] == 0x00) {
                 //we have a data packet.  Check to see if the TXID is what we are expecting.
-                Log.i(TAG, "setSerialDataToTransmitterRawData: Received Data packet");
+                Log.e("tzachi", "setSerialDataToTransmitterRawData: Received Data packet");
                 if (len >= 0x11) {
                     //DexSrc starts at Byte 12 of a data packet.
                     DexSrc = tmpBuffer.getInt(12);
                     TxId = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("dex_txid", "00000");
                     TransmitterID = convertSrc(TxId);
                     if (Integer.compare(DexSrc, TransmitterID) != 0) {
-                        Log.w(TAG, "TXID wrong.  Expected " + TransmitterID + " but got " + DexSrc);
+                        Log.e("tzachi", "TXID wrong.  Expected " + TransmitterID + " but got " + DexSrc);
                         txidMessage.put(0, (byte) 0x06);
                         txidMessage.put(1, (byte) 0x01);
                         txidMessage.putInt(2, TransmitterID);

@@ -41,8 +41,10 @@ public class TransmitterData extends Model {
 
     public static synchronized TransmitterData create(byte[] buffer, int len, Long timestamp) {
         if (len < 6) { return null; }
+        Log.e("tzachi", "create called len = " + len);
         TransmitterData transmitterData = new TransmitterData();
         if ((buffer[0] == 0x11 || buffer[0] == 0x15) && buffer[1] == 0x00) {
+            Log.e("tzachi", "create called in first if");
             //this is a dexbridge packet.  Process accordingly.
             Log.i(TAG, "create Processing a Dexbridge packet");
             ByteBuffer txData = ByteBuffer.allocate(len);
@@ -55,12 +57,14 @@ public class TransmitterData extends Model {
             if (buffer[0] == 0x15) {
                 Log.i(TAG, "create Processing a Dexbridge packet includes delay information");
                 transmitterData.timestamp = timestamp - txData.getInt(16);
+                Log.e("tzachi", "transmitterData.timestamp = " + transmitterData.timestamp + " txData.getInt(16)" + txData.getInt(16));
             } else {
                 transmitterData.timestamp = timestamp;
+                Log.e("tzachi", "transmitterData.timestamp = " + transmitterData.timestamp + " len != 15");
             }
-            Log.i(TAG, "Created transmitterData record with Raw value of " + transmitterData.raw_data + " and Filtered value of " + transmitterData.filtered_data + " at " + timestamp + " with timestamp " + transmitterData.timestamp);
+            Log.e("tzachi", "Created transmitterData record with Raw value of " + transmitterData.raw_data + " and Filtered value of " + transmitterData.filtered_data + " at " + timestamp + " with timestamp " + transmitterData.timestamp);
         } else { //this is NOT a dexbridge packet.  Process accordingly.
-            Log.i(TAG, "create Processing a BTWixel or IPWixel packet");
+            Log.e("tzachi", "create Processing a BTWixel or IPWixel packet");
             StringBuilder data_string = new StringBuilder();
             for (int i = 0; i < len; ++i) { data_string.append((char) buffer[i]); }
             final String[] data = data_string.toString().split("\\s+");
@@ -85,13 +89,17 @@ public class TransmitterData extends Model {
         //Stop allowing readings that are older than the last one - or duplicate data, its bad! (from savek-cc)
         final TransmitterData lastTransmitterData = TransmitterData.last();
         if (lastTransmitterData != null && lastTransmitterData.timestamp >= timestamp) {
+          Log.e("tzachi", "lastTransmitterData.timestamp >= timestamp " + lastTransmitterData.timestamp + " " + timestamp);
             return null;
         }
         if (lastTransmitterData != null && lastTransmitterData.raw_data == transmitterData.raw_data && Math.abs(lastTransmitterData.timestamp - timestamp) < (120000)) {
+            Log.e("tzachi", "same raw, or time too small");
             return null;
         }
         final Calibration lastCalibration = Calibration.lastValid();
         if (lastCalibration != null && lastCalibration.timestamp > timestamp) {
+              Log.e("tzachi", "lalastCalibration.timestamp > timestamp " + lastCalibration.timestamp + " " + timestamp);
+
             return null;
         }
 
