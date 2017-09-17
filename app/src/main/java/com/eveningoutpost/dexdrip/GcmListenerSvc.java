@@ -384,8 +384,9 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                     }
                 }
             } else if (action.equals("bgs")) {
-                Log.i(TAG, "Received BG packet(s)");
+                Log.e("xxxxx", "Received BG packet(s) ignoring");
                 if (Home.get_follower()) {
+                	/*
                     String bgs[] = payload.split("\\^");
                     for (String bgr : bgs) {
                         BgReading.bgReadingInsertFromJson(bgr);
@@ -393,6 +394,7 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                     if (Home.getPreferencesBooleanDefaultFalse("follower_chime") && JoH.pratelimit("bgs-notify", 1200)) {
                         JoH.showNotification("New glucose data @" + JoH.hourMinuteString(), "Follower Chime: will alert whenever it has been more than 20 minutes since last", null, 60311, true, true, true);
                     }
+                    */
                 } else {
                     Log.e(TAG, "Received remote BG packet but we are not set as a follower");
                 }
@@ -400,6 +402,8 @@ public class GcmListenerSvc extends FirebaseMessagingService {
             } else if (action.equals("bfb")) {
                 initprefs();
                 final String bfb[] = payload.split("\\^");
+                Log.i("xxxx", "Ignoring backfill location packet ");
+                /*
                 if (prefs.getString("dex_collection_method", "").equals("Follower")) {
                     Log.i(TAG, "Processing backfill location packet as we are a follower");
                     staticKey = CipherUtils.hexToBytes(bfb[1]);
@@ -415,9 +419,11 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                         }
                     };
                     mainHandler.post(myRunnable);
+                    
                 } else {
                     Log.i(TAG, "Ignoring backfill location packet as we are not follower");
                 }
+                */
             } else if (action.equals("bfr")) {
                 initprefs();
                 if (prefs.getBoolean("plus_follow_master", false)) {
@@ -437,17 +443,23 @@ public class GcmListenerSvc extends FirebaseMessagingService {
                     GcmActivity.syncSensor(Sensor.currentSensor(), false);
                 }
             } else if (action.equals("btmm")) {
+            	Log.e("xxxx", "Receive multi  blood test but we are ignoring it");
+            	/*
                 if (Home.get_master_or_follower() && Home.follower_or_accept_follower()) {
                     BloodTest.processFromMultiMessage(bpayload);
                 } else {
                     Log.i(TAG, "Receive multi blood test but we are neither master or follower");
                 }
+                */
             } else if (action.equals("bgmm")) {
+            	Log.e("xxxx", "Receive multi glucose readings but we are ignoring it");
+            	/*
                 if (Home.get_follower()) {
                     BgReading.processFromMultiMessage(bpayload);
                 } else {
                     Log.i(TAG, "Receive multi glucose readings but we are not a follower");
                 }
+                */
 
             } else {
                 Log.e(TAG, "Received message action we don't know about: " + action);

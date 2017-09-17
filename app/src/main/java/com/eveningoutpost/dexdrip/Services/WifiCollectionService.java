@@ -78,7 +78,8 @@ public class WifiCollectionService extends Service {
         // TODO use DexCollectionType.hasWifi
         if (CollectionServiceStarter.isWifiWixel(getApplicationContext())
                 || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())
-                || CollectionServiceStarter.isWifiandDexBridge()) {
+                || CollectionServiceStarter.isWifiandDexBridge()
+                || true) {
             runWixelReader();
             // For simplicity done here, would better happen once we know if we have a packet or not...
             setFailoverTimer();
@@ -129,7 +130,8 @@ public class WifiCollectionService extends Service {
         // TODO use DexCollectionType.hasWifi()
         if (CollectionServiceStarter.isWifiWixel(getApplicationContext())
                 || CollectionServiceStarter.isWifiandBTWixel(getApplicationContext())
-                || CollectionServiceStarter.isWifiandDexBridge()) {
+                || CollectionServiceStarter.isWifiandDexBridge()
+                || true) {
             final long retry_in = WixelReader.timeForNextRead();
             Log.d(TAG, "setFailoverTimer: Fallover Restarting in: " + (retry_in / (60 * 1000)) + " minutes");
             // TODO use JoH.wakeIntent
