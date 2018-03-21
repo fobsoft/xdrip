@@ -155,6 +155,7 @@ public class DexCollectionService extends Service {
     private SharedPreferences prefs;
     private BluetoothAdapter mBluetoothAdapter;
     private String mDeviceAddress;
+    private volatile long delay_offset = 0;
     private final Cloner cloner = new Cloner();
     private final BroadcastReceiver mPairingRequestRecevier = new BroadcastReceiver() {
         @Override
@@ -1136,6 +1137,13 @@ public class DexCollectionService extends Service {
 
             final BluetoothGattCharacteristic resendCharacteristic =  cloner.shallowClone(localmCharacteristic);
 
+            if (JoH.quietratelimit("dexcol-resend-offset", 2)) {
+                delay_offset = 0;
+            } else {
+                delay_offset += 100;
+                if (d) UserError.Log.e(TAG, "Delay offset now: " + delay_offset);
+            }
+
             JoH.getWakeLock("dexcol-resend-linger", 1000); // dangling wakelock to ensure awake for resend
             JoH.runOnUiThreadDelayed(new Runnable() {
                 @Override
@@ -1151,7 +1159,7 @@ public class DexCollectionService extends Service {
                         UserError.Log.wtf(TAG, "Exception during 2nd try write: " + e + " " + resendCharacteristic.getUuid() + " " + JoH.bytesToHex(value));
                     }
                 }
-            }, 500);
+            }, 500 + delay_offset);
         }
         return result;
     }
